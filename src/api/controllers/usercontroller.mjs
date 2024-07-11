@@ -1,6 +1,7 @@
-const getAllUser = async (_req, res) => {
+//userController.mjs
+const getAllUser = async (req, res) => {
   try {
-    res.send({ data: [{ id: 1, name: "wanchanok" }] });
+    res.send([{ name: "wanchanok", age: 21 }]);
   } catch (error) {
     console.error(error);
   }
@@ -8,7 +9,7 @@ const getAllUser = async (_req, res) => {
 
 const createUser = async (req, res) => {
   try {
-    res.status(200).json({ data: req.body });
+    res.send({ data: req.body });
   } catch (error) {
     console.error(error);
   }

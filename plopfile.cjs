@@ -13,7 +13,7 @@ module.exports = function (plop) {
       {
         type: "add",
         path: "src/api/routes/{{name}}Routers.mjs",
-        templateFile: "plop-templates/route.hbs",
+        templateFile: "templates/route.hbs",
       },
       {
         type: "modify",
@@ -35,13 +35,13 @@ module.exports = function (plop) {
       },
       {
         type: "add",
-        path: "src/api/controllers/{{name}}controller.mjs",
-        templateFile: "plop-templates/controller.hbs",
+        path: "src/api/controllers/{{name}}Controller.mjs",
+        templateFile: "templates/controller.hbs",
       },
       {
         type: "add",
         path: "src/api/schemas/{{name}}Schema.mjs",
-        templateFile: "plop-templates/schema.hbs",
+        templateFile: "templates/schema.hbs",
       },
 
     ],
