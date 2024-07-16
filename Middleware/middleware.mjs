@@ -1,5 +1,7 @@
 import chalk from "chalk";
 import morgan from "morgan";
+import rateLimit from 'express-rate-limit';
+import slowDown from 'express-slow-down';
 
 export const mainMiddleware = {
   errorHandler(err, req, res, next) {
@@ -19,3 +21,17 @@ export const mainMiddleware = {
     ].join(" ");
   }),
 };
+
+export const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: 'Too many requests from this IP, please try again after 15 minutes',
+  headers: true,
+});
+
+export const speedLimiter = slowDown({
+  windowMs: 15 * 60 * 1000,
+  delayAfter: 50,
+  delayMs: () => 500 
+});
+

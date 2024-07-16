@@ -2,15 +2,16 @@
 import express from "express";
 import chalk from "chalk";
 import cookieParser from "cookie-parser";
-import { mainMiddleware } from "./Middleware/middleware.mjs";
+import { mainMiddleware, apiLimiter, speedLimiter } from "./Middleware/middleware.mjs";
 import routes from "./src/api/routes/index.mjs";
 import dotenv from "dotenv";
 import Table from "cli-table3";
-import sequelize, {authenticateDatabase} from "./config/database.mjs";
+import sequelize, { authenticateDatabase } from "./config/database.mjs";
 
 dotenv.config();
 
 const app = express();
+app.use("/api", apiLimiter, speedLimiter);
 app.use(mainMiddleware.responseTime);
 app.use(express.json());
 
@@ -55,4 +56,3 @@ const startServer = async () => {
   }
 };
 startServer();
-
