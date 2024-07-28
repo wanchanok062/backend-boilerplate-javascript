@@ -1,4 +1,6 @@
 const fs = require("fs");
+const dotenv = require('dotenv');
+dotenv.config();
 
 module.exports = function (plop) {
   plop.setActionType("deleteMultiple", function (answers, config, plop) {
@@ -32,9 +34,11 @@ module.exports = function (plop) {
         {
           type: "deleteMultiple",
           files: [
-            `src/api/controllers/${moduleName}controller.mjs`,
+            `src/api/controllers/${moduleName}Controller.mjs`,
             `src/api/routes/${moduleName}Routers.mjs`,
             `src/api/schemas/${moduleName}Schema.mjs`,
+            `src/api/models/${moduleName}Model.mjs`,
+            `src/api/services/${moduleName}Service.mjs`,
           ],
         },
         {
@@ -58,7 +62,7 @@ module.exports = function (plop) {
         {
           type: "modify",
           path: "src/api/routers.markdown",
-          pattern: new RegExp(`api/${moduleName}\\n`, "g"),
+          pattern: new RegExp(`api/${process.env.API_VERSION}/${moduleName}\\n`, "g"),
           template: "",
         },
       ];

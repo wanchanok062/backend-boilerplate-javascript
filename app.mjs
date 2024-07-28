@@ -2,11 +2,15 @@
 import express from "express";
 import chalk from "chalk";
 import cookieParser from "cookie-parser";
-import { mainMiddleware, apiLimiter, speedLimiter } from "./Middleware/middleware.mjs";
+import {
+  mainMiddleware,
+  apiLimiter,
+  speedLimiter,
+} from "./src/Middleware/middleware.mjs";
 import routes from "./src/api/routes/index.mjs";
 import dotenv from "dotenv";
 import Table from "cli-table3";
-import sequelize, { authenticateDatabase } from "./config/database.mjs";
+import sequelize from "./src/config/database.mjs";
 
 dotenv.config();
 
@@ -22,37 +26,47 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cookieParser());
 
-app.use("/api", routes);
+app.use(`/api/${process.env.API_VERSION}`, routes);
 
-const initializeDatabase = async () => {
-  try {
-    await authenticateDatabase();
-    await sequelize.sync();
-    console.log(chalk.bold.greenBright("Database & tables created!"));
-  } catch (error) {
-    console.error(chalk.red.bold("Unable to create database & tables:"), error);
-  }
+const createStatusTable = (port, environment, databaseStatus) => {
+  const table = new Table({
+    head: [chalk.green.bold("App Status"), chalk.green.bold("Database Status"),chalk.green.bold("Mode")],
+    colWidths: [30, 23],
+    wordWrap: true,
+  });
+
+  table.push([
+    `Server running on port ${port}`,
+    databaseStatus,
+    `${environment} mode`
+  ]);
+
+  return table.toString();
 };
 
 const startServer = async () => {
   try {
-    await initializeDatabase();
+    await sequelize.authenticate();
+    console.log("Database connection has been established successfully.");
 
     app.listen(PORT, () => {
-      const table = new Table({
-        head: [chalk.green("App Status")],
-        colWidths: [55],
-      });
-
-      table.push([
-        `Server is running on port ${PORT} in ${process.env.NODE_ENV} mode`,
-      ]);
-      console.log(table.toString());
+      const statusTable = createStatusTable(
+        PORT,
+        process.env.NODE_ENV || "development",
+        "Connected and synced"
+      );
+      console.log(statusTable);
     });
-
-    app.use(mainMiddleware.errorHandler);
   } catch (error) {
-    console.error(chalk.red.bold("Failed to start server:"), error);
+    console.error("Unable to start server:", error);
+    const statusTable = createStatusTable(
+      PORT,
+      process.env.NODE_ENV || "development",
+      `Error: ${error.message}`
+    );
+    console.log(statusTable);
+    process.exit(1);
   }
 };
+
 startServer();
